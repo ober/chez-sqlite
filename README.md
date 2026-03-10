@@ -53,3 +53,4 @@ make test
 | `(sqlite-finalize stmt)` | Finalize statement |
 | `(sqlite-last-insert-rowid db)` | Last inserted row ID |
 | `(sqlite-changes db)` | Rows changed by last statement |
+# chez-sqlite
