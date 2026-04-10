@@ -18,9 +18,14 @@
 
   (import (chezscheme))
 
-  ;; Load shared objects
-  (define _l1 (load-shared-object "libsqlite3.so"))
-  (define _l2 (load-shared-object "chez_sqlite_shim.so"))
+  ;; Load shared objects — try .so first (Linux), fall back to .dylib (macOS)
+  (define _l1
+    (or (guard (e [#t #f]) (load-shared-object "libsqlite3.so"))
+        (guard (e [#t #f]) (load-shared-object "libsqlite3.dylib"))
+        (error 'chez-sqlite "Cannot find libsqlite3 (.so or .dylib)")))
+  (define _l2
+    (or (guard (e [#t #f]) (load-shared-object "chez_sqlite_shim.so"))
+        (error 'chez-sqlite "Cannot find chez_sqlite_shim.so — add vendor/chez-sqlite to DYLD_LIBRARY_PATH / LD_LIBRARY_PATH")))
 
   ;; ---- FFI bindings ----
   (define c-open    (foreign-procedure "chez_sqlite_open" (string u8* int) void*))
